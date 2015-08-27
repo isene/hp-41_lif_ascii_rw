@@ -1,0 +1,110 @@
+#!/usr/bin/ruby 
+
+# Copyright 2010, Geir Isene. Released under the GPL v. 2
+# Version 0.1 (2010-03-08)
+
+def help
+puts <<HELPTEXT
+
+NAME
+        lifaswrite - LIF ascii file write
+
+SYNOPSIS
+	lifaswrite [-hv] [--help, --version] [text file] [destination lif-file]
+
+DESCRIPTION
+	lifaswrite is used as a tool for HP-41 or HP-71 connected to a PC.
+	lifaswrite takes text file and writes an ascii file inside a lif formated file.
+	It creates a lif-file of 32KB with only one ascii file in it. 
+	The name of that ascii file is the first line in the text file.
+	To read the file into your HP-41, you make sure the lif-file resides
+	on the a mass storage device accessible from the calculator and then
+	XEQ "GETAS". The ascii file will then be loaded into Extended Memory.
+	The sister-script "lifasread" will read an ascii file from within a lif-file.
+
+OPTIONS
+        -h, --help
+                Show this help text
+    
+        -v, --version
+                Show the version of imap_search
+
+EXAMPLE
+	lifasread textfile.txt hdrive1.lif
+
+	This would create the lif-file "hdrive1.lif" with the content of "textfile.txt"
+	as an ascii file within the lif-file.
+    
+COPYRIGHT:
+        Copyright 2010, Geir Isene (http://www.geir.isene.com, g@isene.com)
+        This program is released under the GNU General Public lisence v3
+        For the full lisence text see: http://www.gnu.org/copyleft/gpl.html
+
+HELPTEXT
+end
+
+require 'getoptlong'
+
+opts = GetoptLong.new(
+    [ "--help",             "-h",   GetoptLong::NO_ARGUMENT ],
+    [ "--version",          "-v",   GetoptLong::NO_ARGUMENT ]
+)
+
+version = "0.1"
+
+opts.each do |opt, arg|
+  case opt
+    when "--help"
+      help
+      exit
+    when "--version"
+      puts "\nlifaswrite version " + version + "\n\n"
+      exit
+  end
+end
+
+if ARGV.empty? then 
+  puts "No arguments supplied!"
+  exit 
+end
+
+if ARGV.length < 2 
+  puts "Too few arguments supplied!"
+  exit 
+end
+
+txt_file = ARGV[0]
+lif_file = ARGV[1]
+
+# Get lif-file from HDRIVE1
+f = File.open(txt_file, 'r') {|f| f.read }
+f = f.split
+f.collect! { |i| i.scan(%r{.{1,254}}) }
+f.flatten!
+
+# Collect the name of the ascii file (first line of text file)
+fname = f.first.to_s[0..7].strip
+lname = fname.ljust(10)
+f.delete_at(0)
+fsize = ( ( f.to_s.size + f.length )/7 ).to_i + 1
+
+# Collect the content of the file into the ascii file
+lcont = f.collect do |a|
+    "\000" + a.length.chr + a + "\000"
+end
+lcont = lcont.to_s + "\377\000"
+
+# Build the "stuff" in the lif-file
+lstart = "\200\000\000\000\002\020\000\200\000\000\000\002\020\000\000\000\000\000\000\001" + "\000"*492
+lpad   = "\000\001\000\000\000\003\000\000\000\004\000\000\000\000\000\000\200\001\000|\000 " + "\377"*224
+lend   = "\377"*( 32768 - ( lstart.size + lname.size + lcont.size + lpad.size ) )
+
+# Assemble the final lif-file
+ltotal = lstart + lname + lpad + lcont + lend
+
+# Save it to HDRIVE1
+File.open(lif_file, 'w') {|f| f.write(ltotal) }
+
+# Tell the user to complete the synchronization by pressing R/S on his 41
+puts "\"#{txt_file}\" written to \"#{lif_file}\""
+puts "Put #{fsize} in X, \"#{fname}\" in Alpha and XEQ \"CRFLAS\""

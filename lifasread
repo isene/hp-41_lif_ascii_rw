@@ -1,0 +1,97 @@
+#!/usr/bin/ruby 
+
+# Copyright 2010, Geir Isene. Released under the GPL v. 2
+# Version 0.1 (2010-03-08)
+
+def help
+puts <<HELPTEXT
+
+NAME
+        lifasread - LIF ascii file read
+
+SYNOPSIS
+	lifasread [-hv] [--help, --version] [lif-file] [destination file]
+
+DESCRIPTION
+	lifasread is used as a tool for HP-41 or HP-71 connected to a PC.
+	lifasread reads an ascii file inside a lif formated file.
+	It reads only the first ascii file and so the lif-file should
+	be consisting of only one file. To create a lif file with only
+	one file from an HP-41, have your calculator hooked to the PC
+	and/or a lif-writing mass storage device and XEQ "NEWM 001". Then
+	put the size of the ascii file in the X register and its name in
+	the Alpha register. Then XEQ "CRFLAS". Fill it with content as needed,
+	and XEQ "SAVEAS" to save the file to mass storage.
+	Then from your PC execute lifasread to extract the content.
+	The sister-script "lifaswrite" will reverse the process.
+
+OPTIONS
+        -h, --help
+                Show this help text
+    
+        -v, --version
+                Show the version of imap_search
+
+EXAMPLE
+	lifasread hdrive1.lif textfile.txt
+
+	This would extract the ascii file from "hdrive1.lif" and write
+	it to the file "textfile.txt".
+    
+COPYRIGHT:
+        Copyright 2010, Geir Isene (http://www.geir.isene.com, g@isene.com)
+        This program is released under the GNU General Public lisence v3
+        For the full lisence text see: http://www.gnu.org/copyleft/gpl.html
+
+HELPTEXT
+end
+
+require 'getoptlong'
+
+opts = GetoptLong.new(
+    [ "--help",             "-h",   GetoptLong::NO_ARGUMENT ],
+    [ "--version",          "-v",   GetoptLong::NO_ARGUMENT ]
+)
+
+version = "0.1"
+
+opts.each do |opt, arg|
+  case opt
+    when "--help"
+      help
+      exit
+    when "--version"
+      puts "\nlifasread version " + version + "\n\n"
+      exit
+  end
+end
+
+if ARGV.empty? then 
+  puts "No arguments supplied!"
+  exit 
+end
+
+if ARGV.length < 2 
+  puts "Too few arguments supplied!"
+  exit 
+end
+
+lif_file = ARGV[0]
+txt_file = ARGV[1]
+
+# Get lif-file from HDRIVE1
+f = File.open(lif_file, 'r') {|f| f.read }
+
+# Strip the front and back of the file and collect the ascii file name
+fname = f.sub(/^.*?(\w+).*$/,'\1')
+fcont = f.sub(/^.*REMF.*?\000[\014-\376](\w.*?)\000\377.*$/,'\1')
+fcont = fcont.gsub(/\000[\014-\376]/,"\n")
+fcont = fcont.gsub(/\000/,'')
+lif_total = fname + "\n\n" + fcont
+
+# Save it to text file
+File.open(txt_file, 'w') {|f| f.write(lif_total) }
+
+# Tell the user to complete the synchronization by pressing R/S on his 41
+puts "\"#{lif_file}\" extracted to \"#{txt_file}\""
+
