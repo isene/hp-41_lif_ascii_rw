@@ -6,7 +6,7 @@
 **lifaswrite** – a Ruby script to write a text file to a lif-formated file (the reverse of “lifasread”. Run the script with the -h (or –help) option to see how it is used.
 
 **NAME**<br>
-    lifasread - LIF ascii file read
+**__lifasread__** - LIF ascii file read
 
 **SYNOPSIS**<br>
     lifasread [-hv] [--help, --version] [lif-file] [destination file]
@@ -37,7 +37,7 @@
 This would extract the ascii file from "hdrive1.lif" and write it to the file "textfile.txt".
 
 **NAME**<br>
-    lifaswrite - LIF ascii file write
+**__lifaswrite__** - LIF ascii file write
 
 **SYNOPSIS**<br>
     lifaswrite [-hv] [--help, --version] [text file] [destination lif-file]
