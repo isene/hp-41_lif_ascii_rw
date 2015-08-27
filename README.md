@@ -25,11 +25,11 @@
     The sister-script "lifaswrite" will reverse the process.
 
 **OPTIONS**<br>
-        -h, --help<br>
-                Show this help text
+-h, --help<br>
+    Show this help text
     
-        -v, --version<br>
-                Show the version of imap_search
+-v, --version<br>
+    Show the version of imap_search
 
 **EXAMPLE**<br>
     lifasread hdrive1.lif textfile.txt
@@ -54,11 +54,11 @@
     The sister-script "lifasread" will read an ascii file from within a lif-file.
 
 **OPTIONS**<br>
-        -h, --help<br>
-                Show this help text
+-h, --help<br>
+    Show this help text
     
-        -v, --version<br>
-                Show the version of imap_search
+-v, --version<br>
+    Show the version of imap_search
 
 **EXAMPLE**<br>
     lifasread textfile.txt hdrive1.lif
