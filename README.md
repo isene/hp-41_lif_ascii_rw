@@ -64,3 +64,6 @@ This would extract the ascii file from "hdrive1.lif" and write it to the file "t
 
 This would create the lif-file "hdrive1.lif" with the content of "textfile.txt" as an ascii file within the lif-file.
 
+## License
+This software is released into the Public Domain.
+
