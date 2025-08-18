@@ -1,4 +1,10 @@
 # hp-41_lif_ascii_rw
+
+[![HP-41](https://img.shields.io/badge/HP--41-Calculator-orange)](https://en.wikipedia.org/wiki/HP-41C)
+[![License](https://img.shields.io/badge/License-Public%20Domain-brightgreen.svg)](https://unlicense.org/)
+[![GitHub stars](https://img.shields.io/github/stars/isene/hp-41_lif_ascii_rw.svg)](https://github.com/isene/hp-41_lif_ascii_rw/stargazers)
+[![Stay Amazing](https://img.shields.io/badge/Stay-Amazing-blue.svg)](https://isene.org)
+
 ## HP-41: LIF to ASCII read/write
 
 **lifasread** – a Ruby script to read an ascii file stored in a lif-formated file (used by the HP-41 as file format on mass storage mediums. Tested on Linux. Run the script with the -h (or –help) option to see how it is used.
